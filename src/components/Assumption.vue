@@ -2,7 +2,7 @@
   <article class="assumption">
 
     <div class="label">
-      <div class="value">{{assumption.value}}</div>
+      <div class="value">{{formattedAssumption}}</div>
       <div class="description">{{assumption.description}}</div>
     </div>
 
@@ -17,6 +17,13 @@
 </template>
 
 <script>
+const FORMATTER = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+});
+const PAY_GRADE_MAP = ['JA1', 'JA2', 'SA1', 'SA2', 'Associate']
+
 import { Bus } from '../bus.js'
 import SliderChart from './SliderChart';
 
@@ -47,6 +54,28 @@ export default {
         scale: 36,
       };
     },
+    formattedAssumption() {
+      let value = this.assumption.value;
+      let format = this.assumption.format;
+      
+      if ('currency' === format)
+        return FORMATTER.format(value);
+
+      else if ('percent' === format)
+        return Math.round(value) + '%';
+
+      else if ('float' === format)
+        return Math.round(value, 1);
+
+      else if ('paygrade' === format)
+        return PAY_GRADE_MAP[value];
+
+      else if ('int' === format)
+        return Math.round(value);
+
+      else
+        return value;
+    }
   },
   mounted() {
     let vm = this;
@@ -63,6 +92,7 @@ export default {
   flex-flow: row wrap;
   align-items: center;
   max-width: 960px;
+  margin: auto;
 
   .label {
     flex-basis: 160px;

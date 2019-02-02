@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      value: undefined,
+      value: 1,
       // height: 150,
       // width: null,
     };
@@ -43,17 +43,23 @@ export default {
     graphDimensions: {
       type: Object,
       default: () => ({
-        h: 0,
-        w: 0,
-        scale: 0,
+        h: 1,
+        w: 1,
+        scale: 1,
       }),
     },
     sliderRange: {
       type: Object,
-      default: () => {}
+      default: () => ({
+        min: 1,
+        max: 1,
+        step: 1, 
+        interval: 1,
+      })
     },
     sliderValue: {
       type: Number,
+      default: 1,
     },
     name: {
       type: String,

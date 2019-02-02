@@ -2,9 +2,9 @@
   <div id="app">
     <MadlabHeader />
     <h1>When Will I Meet My Goal?</h1>
-    <p>The blue numbers show when your goal is reached.</p>
-    <p>The orange numbers give a snapshot of any selected month along your journey.</p>
-    <MadlabResults :results="results"/>
+    <p>The bluecolumn shows when your goal is reached.</p>
+    <p>The right column show a snapshot of any selected month along your journey.</p>
+    <MadlabResults :results="results" :assumptions="assumptions"/>
     <MadlabMain :assumptions="assumptions"/>
   </div>
 </template>
@@ -21,7 +21,7 @@ const FORMATTER = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 0,
 });
 
-const PAY_GRADE_MAP = ['Junior I','Junior II','Senior I','Senior II','Associate','Coach'];
+const PAY_GRADE_MAP = ['JA1', 'JA2', 'SA1', 'SA2', 'Associate']
 
 const defaultData = {
   x: [],
@@ -77,7 +77,7 @@ export default {
           sliderRange: {
             min: 5,
             max: 40,
-            step: 1.8, // ? 1
+            step: 2,
             interval: 1,
           },
           graphData: defaultData,
@@ -88,7 +88,7 @@ export default {
           format: 'paygrade',
           sliderRange: {
             min: 0,
-            max: 5,
+            max: 4,
             step: 1,
             interval: 1,
           },
@@ -102,7 +102,7 @@ export default {
             min: 100,
             max: 400,
             step: 10, // ? 5
-            interval: 10,
+            interval: 5,
           },
           graphData: defaultData,
         },
@@ -149,7 +149,7 @@ export default {
           sliderRange: {
             min: 0,
             max: 10,
-            step: .5, 
+            step: 1, 
             interval: .5,
           },
           graphData: defaultData,
@@ -161,7 +161,7 @@ export default {
           sliderRange: {
             min: 0,
             max: 10,
-            step: .5, 
+            step: 1, 
             interval: .5,
           },
           graphData: defaultData,
@@ -173,7 +173,7 @@ export default {
           sliderRange: {
             min: 0,
             max: 10,
-            step: .5, 
+            step: 1, 
             interval: .5,
           },
           graphData: defaultData,
@@ -181,7 +181,7 @@ export default {
         sourceClients1: {
           description: 'Y1: % of Clients Self Sourced',
           value: 10,
-          format: 'int',
+          format: 'percent',
           sliderRange: {
             min: 0,
             max: 100,
@@ -193,7 +193,7 @@ export default {
         sourceClients2: {
           description: 'Y2: % of Clients Self Sourced',
           value: 50,
-          format: 'int',
+          format: 'percent',
           sliderRange: {
             min: 0,
             max: 100,
@@ -205,7 +205,7 @@ export default {
         sourceClients3: {
           description: 'Y3+: % of Clients Self Sourced',
           value: 80,
-          format: 'int',
+          format: 'percent',
           sliderRange: {
             min: 0,
             max: 100,
@@ -227,13 +227,13 @@ export default {
           graphData: defaultData,
         },
         superstar: {
-          description: 'Months to Superstar',
+          description: 'Months to Awesome Salemanship',
           value: 36,
           format: 'int',
           sliderRange: {
             min: 1,
-            max: 36,
-            step: 1.8,
+            max: 60,
+            step: 4,
            interval: 1,
          },
          graphData: defaultData,
@@ -266,18 +266,16 @@ export default {
       if (paygrade == 0) return 0;
       if (paygrade == 1) return .2;
       if (paygrade == 2) return .3;
-      if (paygrade == 3) return .3;
+      if (paygrade == 3) return .35;
       if (paygrade == 4) return .4;
-      if (paygrade == 5) return .5;
-      return .5
+      return .4
     },
     getPaygrade(paygrade, clients) {
       let pg;
-      if (clients > 60) pg = 5;
-      else if (clients > 40) pg = 4;
-      else if (clients > 20) pg = 3;
-      else if (clients > 9) pg = 2;
-      else if (clients > 1) pg = 1;
+      if (clients >= 50) pg = 4;
+      else if (clients >= 30) pg = 3;
+      else if (clients >= 10) pg = 2;
+      else if (clients >= 3) pg = 1;
       else pg = 0;
       return Math.max(pg, paygrade);
     },
@@ -340,7 +338,7 @@ export default {
       });
       return d3Data;
     },
-    calculateAssumptionGraphData(Months) {
+    calculateAssumptionGraphData() {
       let vm = this;
       let a = this.assumptions;
       const assumptionKeys = Object.keys(a);
@@ -436,7 +434,7 @@ export default {
       let checkGoals = 0;  // 'assumptions' = mode
 
       if (goalMonth == 0 && actualIncomePerMonth > desiredIncomePerMonth) {
-        goalMonth = i+2;
+        goalMonth = i+1;
         checkGoals = 'results' === mode ? 0 : goalMonth;
       }
       if (actualIncomePerMonth <= 0 || introHours <= 0 || fundamentalsClients <= 0 || ptHours <= 0) {
@@ -532,9 +530,10 @@ export default {
       return 'Error';
     },
     setRawResultsGraphData(Months) {
+      
       let tD = this.results.tableData;
-      let gM = tD.goalMonth;
-      let sM = this.results.selectedMonth;
+      let gM = tD.goalMonth >= 36 ? 35 : tD.goalMonth;
+      let sM = this.results.selectedMonth - 1;
       // goal month
       tD.clients[0] = 0 === gM ? 'N/A' : Math.round(Months[gM].Clients);
       tD.hrsPerWeek[0] = 0 === gM ? 'N/A' : Math.round(Months[gM].HoursWeek * 10) / 10;
@@ -557,14 +556,12 @@ export default {
     },
   },
   watch: {
-    Months(Months) {
-      this.calculateAssumptionGraphData(Months);
+    Months() {
+      this.calculateAssumptionGraphData();
     },
     'assumptions.classHours.value'(hours) {
-      let min = this.assumptions.floorHours.sliderRange.min;
       if (hours >= 5)
         this.assumptions.floorHours.sliderRange.min = hours;
-      
     }
   },
   mounted() {
@@ -590,7 +587,8 @@ export default {
 
     // initial calculation
     let params = this.getAssumptionSliderValues();
-    this.calculateAssumptionGraphData(this.calculate('results', params));
+    this.calculate('results', params);
+    this.calculateAssumptionGraphData();
   },
 }
 </script>
@@ -602,5 +600,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   padding: 20px;
+  max-width: 960px;
+  margin: auto;
 }
 </style>
