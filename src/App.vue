@@ -2,7 +2,7 @@
   <div id="app">
     <MadlabHeader />
     <h1>When Will I Meet My Goal?</h1>
-    <p>The bluecolumn shows when your goal is reached.</p>
+    <p>The left column shows when your goal is reached.</p>
     <p>The right column show a snapshot of any selected month along your journey.</p>
     <MadlabResults :results="results" :assumptions="assumptions"/>
     <MadlabMain :assumptions="assumptions"/>
@@ -38,11 +38,12 @@ export default {
   },
   data() {
     return {
+      Months: [],
       results: {
         selectedMonth: 1,
         sliderRange: {
             min: 1,
-            max: 36,
+            max: 48,
             step: 1, 
             interval: 1,
           },
@@ -55,12 +56,13 @@ export default {
           dollarsPerHour: [],
           totalIncome: [],
           payGrade: [],
+          attrition: [],
         },
       },
       assumptions: {
         desiredIncomePerMonth: {
           description: 'Desired Income per Month',
-          value: 3000,
+          value: 4000,
           format: 'currency',
           sliderRange: {
             min: 0,
@@ -144,7 +146,7 @@ export default {
         },
         newClients1: {
           description: 'Y1: New PT Clients/month',
-          value: 1,
+          value: 2,
           format: 'float',
           sliderRange: {
             min: 0,
@@ -214,6 +216,18 @@ export default {
           },
           graphData: defaultData,
         },
+        averagePT: {
+          description: 'Average PT Sessions per Client',
+          value: 10,
+          format: 'int',
+          sliderRange: {
+            min: 3,
+            max: 25,
+            step: 1,
+            interval: 1,
+          },
+          graphData: defaultData,
+        },
         salesmanship: {
           description: 'Salesmanship',
           value: 1,
@@ -242,11 +256,12 @@ export default {
     };
   },
   computed: {
-    Months() {
-      let mode = 'results'
-      let params = this.getAssumptionSliderValues();
-      return this.calculate(mode, params);
-    },
+    // Months() {
+    //   let mode = 'results'
+    //   let params = this.getAssumptionSliderValues();
+    //   return this.calculate(mode, params);
+    // },
+    
   },
   methods: {
     getAssumptionSliderValues(currentKey, tickValue) {
@@ -262,13 +277,15 @@ export default {
       });
       return values;
     },
-    getCommission(paygrade) {
+    getCommission(paygrade, clientsS) {
+      let referral = (clientsS / 100) * .1;
       if (paygrade == 0) return 0;
-      if (paygrade == 1) return .2;
-      if (paygrade == 2) return .3;
-      if (paygrade == 3) return .35;
-      if (paygrade == 4) return .4;
-      return .4
+      if (paygrade == 1) return .2 + referral;
+      if (paygrade == 2) return .3 + referral;
+      if (paygrade == 3) return .35 + referral;
+      if (paygrade == 4) return .4 + referral;
+      return .4 + referral;
+      
     },
     getPaygrade(paygrade, clients) {
       let pg;
@@ -302,15 +319,18 @@ export default {
       let end = 90; // fG10
       return this.getSalesmanshipValue(start, end, salesmanship);
     },
-    ptPerFun(salesmanship) {
-      let start = 10; //pF1
-      let end = 16; //pF10
-      return this.getSalesmanshipValue(start, end, salesmanship);
-    },
-    yearlyAttrition(salesmanship) {
+    // averagePT(salesmanship) {
+    //   let start = 10; //pF1
+    //   let end = 16; //pF10
+    //   return this.getSalesmanshipValue(start, end, salesmanship);
+    // },
+    yearlyAttrition(salesmanship, averagePT) {
       let start = 40; // yA1
       let end = 10; // yA10
-      return this.getSalesmanshipValue(start, end, salesmanship);
+      let baseAttrition = this.getSalesmanshipValue(start, end, salesmanship);
+      let ptRatio = Math.min(averagePT/20, 1);
+      return Math.round(baseAttrition/ptRatio);
+
     },
     getSalesmanshipValue(start, end, salesmanship) {
       // salesmanship is a value from 1 - 10
@@ -320,7 +340,7 @@ export default {
     },
     getCurrentSalesmanship(startingSalesmanship, monthsToSuperstar, currentMonth) {
       let max = 10;
-      let increment = (max - startingSalesmanship) / (monthsToSuperstar - 1);
+      let increment = (max - startingSalesmanship) / (monthsToSuperstar);
       let currentSalemanship = startingSalesmanship + ( ( currentMonth ) * increment );
       return Math.min(max, currentSalemanship);
     },
@@ -366,7 +386,7 @@ export default {
 
         // format assumption graph data
         vm.assumptions[key].graphData = vm.formatGraphData(rawData, a[key].sliderRange);
-        vm.assumptions[key].graphData.tooltip = vm.assumptions[key].graphData.tooltip.map(val => 0 === val ? '36+ Months' : `${val} Months`);
+        vm.assumptions[key].graphData.tooltip = vm.assumptions[key].graphData.tooltip.map(val => 0 === val ? '48+ Months' : `${val} Months`);
       });
     },
     // Based on assumptions, calculate 36 months worth of data
@@ -384,179 +404,165 @@ export default {
       sourceClients1,
       sourceClients2,
       sourceClients3,
+      averagePT,
       salesmanship,
       superstar }) {
 
-      let introToFun = this.introToFun(salesmanship);
-      let funToGroup = this.funToGroup(salesmanship);
-      let ptPerFun = this.ptPerFun(salesmanship);
-      let yearlyAttrition = this.yearlyAttrition(salesmanship);
-
-      let fundamentalsClients = Math.min( ( floorHours - classHours ) / ( ( 1 / introToFun ) + ( ptPerFun / 4.3 )) , newClients1);
-      fundamentalsClients = fundamentalsClients < 0 ? 0 : fundamentalsClients;
-      let introHours = fundamentalsClients / introToFun * 100;
-      let Clients = startClients + newClients1;
-      let newClients = Clients;
-      let ptHours = (fundamentalsClients * ptPerFun) / 4.3;
-      let HoursWeek = ptHours + classHours + introHours;
-      let clientsS = sourceClients1;
-
-      let PayGrade = this.getPaygrade(startingPayGrade, Clients);
-      let Commission = this.getCommission(PayGrade);
-      let actualIncomePerMonth = (monthlyRate * Clients + hourlyRate * ptPerFun * fundamentalsClients) * (Commission + (clientsS / 100) * .1);
-      let IncomeH = actualIncomePerMonth / (HoursWeek * 4.3);
-      let IncomeT = actualIncomePerMonth;
-      
       let Months = [];
-      Months.push({
-          introHours,
-          introToFun,
-          fundamentalsClients,
-          funToGroup,
-          yearlyAttrition,
-          Clients,
-          ptPerFun,
-          ptHours,
-          classHours,
-          HoursWeek,
-          clientsS,
-          actualIncomePerMonth,
-          IncomeH,
-          IncomeT,
-          PayGrade,
-          month: 1,
-          newClients
-      });
+      let month = {
+        introHours: undefined,
+        introToFun: this.introToFun(salesmanship),
+        funToGroup: this.funToGroup(salesmanship),
+        yearlyAttrition: this.yearlyAttrition(salesmanship, averagePT),
+        newClients: newClients1,
+        fundamentalsClients: newClients1,
+        classClients: startClients,
+        ptBucket: 0,
+        ptHours: undefined,
+        hoursWeek: undefined,
+        clientsS: sourceClients1,
+        revenue: undefined,
+        incomeM: undefined,
+        incomeH: undefined,
+        incomeT: 0,
+        payGrade: undefined,
+      }
+
+      month.introHours = month.newClients / month.introToFun * 100;
+      let availablePtHours = (floorHours - classHours)*4.3 - month.introHours;
+      month.ptBucket += month.newClients * averagePT;
+      month.ptHours = Math.min(availablePtHours, month.ptBucket);
+      month.ptBucket -= month.ptHours;
+      month.hoursWeek = (month.ptHours + classHours*4.3 + month.introHours)/4.3;
+      let clientsFinishedPT = month.ptHours/averagePT;
+      month.fundamentalsClients -= clientsFinishedPT;
+      month.fundamentalsClients = Math.round(month.fundamentalsClients, 2);
+      month.classClients += clientsFinishedPT * (month.funToGroup / 100);
+
+      // income
+      month.revenue = monthlyRate * month.classClients + hourlyRate * month.ptHours; 
+      month.payGrade = this.getPaygrade(startingPayGrade, month.classClients);
+      let commission = this.getCommission(month.payGrade, month.clientsS);
+      month.incomeM = month.revenue * commission;
+      month.incomeH = month.incomeM / (month.hoursWeek * 4.3);
+      month.incomeT += month.incomeM;
+      
+      Months.push({...month});
 
       let i = 0;
       let goalMonth = 0;
-      let noHours = 0;
       let checkGoals = 0;  // 'assumptions' = mode
 
-      if (goalMonth == 0 && actualIncomePerMonth > desiredIncomePerMonth) {
+      // Did we meet our goal in this month?
+      if (goalMonth == 0 && month.incomeM > desiredIncomePerMonth) {
         goalMonth = i+1;
         checkGoals = 'results' === mode ? 0 : goalMonth;
       }
-      if (actualIncomePerMonth <= 0 || introHours <= 0 || fundamentalsClients <= 0 || ptHours <= 0) {
-        noHours = 1;
-      }
         
-
       //SUBSEQUENT MONTHS
-      while (i < 35 && 0 === checkGoals) {
+      while (i < 47 && 0 === checkGoals) {
         let currentSalesmanship = this.getCurrentSalesmanship(salesmanship, superstar, i+1);
-        ptPerFun = this.ptPerFun(currentSalesmanship);
-        introToFun = this.introToFun(currentSalesmanship);
-        funToGroup = this.funToGroup(currentSalesmanship);
-        yearlyAttrition = this.yearlyAttrition(currentSalesmanship);
+        month.introToFun = this.introToFun(currentSalesmanship);
+        month.funToGroup = this.funToGroup(currentSalesmanship);
+        month.yearlyAttrition = this.yearlyAttrition(currentSalesmanship, averagePT);
+        
         if (i+2 > 24)
-          newClients = newClients3;
+          month.newClients = newClients3;
         else if (i+1 == 12)
-          newClients =  newClients2;
+          month.newClients =  newClients2;
         else if (i+2 > 12)
-          newClients =  (newClients3 - newClients2) / 12 + Months[i].newClients;
+          month.newClients =  (newClients3 - newClients2) / 12 + Months[i].newClients;
         else
-          newClients =  (newClients2 - newClients1) / 12 + Months[i].newClients;
-
-        let currentClassHours = Math.max(Months[i].Clients / 4 , classHours);
-
-        fundamentalsClients = Math.min( ( floorHours - currentClassHours ) / ( ( 1 / introToFun ) + ( ptPerFun / 4.3 )) , newClients);
-        fundamentalsClients = fundamentalsClients < 0 ? 0 : fundamentalsClients;
-
-        introHours = fundamentalsClients / introToFun * 100;
+          month.newClients =  (newClients2 - newClients1) / 12 + Months[i].newClients;
         
-        Clients = Months[i].fundamentalsClients * (Months[i].funToGroup/100) + Months[i].Clients * (1 - (Months[i].yearlyAttrition/100) / 12);
+        month.fundamentalsClients += month.newClients;
 
-        ptHours = (fundamentalsClients * ptPerFun) / 4.3;
+        // possibly override class hours
+        let currentClassHours = Math.max(Months[i].classClients / 6 , classHours);
 
-        HoursWeek = ptHours + currentClassHours + introHours;
+        month.introHours = month.newClients / month.introToFun * 100;
+        availablePtHours = (floorHours - currentClassHours)*4.3 - month.introHours;
+        availablePtHours = availablePtHours <= 0 ? 0 : availablePtHours;
+        month.ptBucket += month.newClients * averagePT;
+        month.ptHours = Math.min(availablePtHours, month.ptBucket);
+        month.ptBucket -= month.ptHours;
 
-        let clientsS = this.getClientsSource(sourceClients1, sourceClients2, sourceClients3, Months, i);
+        month.hoursWeek = (month.ptHours + currentClassHours*4.3 + month.introHours)/4.3;
+        clientsFinishedPT = month.ptHours/averagePT;
+        month.fundamentalsClients -= clientsFinishedPT;
+        month.fundamentalsClients = Math.round(month.fundamentalsClients, 2);
 
-        PayGrade = this.getPaygrade(startingPayGrade, Clients);
-
-        Commission = this.getCommission(PayGrade);
+        // Move clients from fundamentals to class
+        month.classClients += clientsFinishedPT * (month.funToGroup / 100);
         
-        actualIncomePerMonth = (monthlyRate * Clients + hourlyRate * ptPerFun * fundamentalsClients) * (Commission + (clientsS / 100) * .1);
+        // Drop clients due to attrition
+        let clientsLost = Months[i].classClients * (Months[i].yearlyAttrition/100) / 12;
+        month.classClients -= clientsLost;        
+        
+        // income
+        month.revenue = monthlyRate * month.classClients + hourlyRate * month.ptHours; 
 
-        IncomeH = actualIncomePerMonth / (HoursWeek * 4.3);
+        month.clientsS = this.getClientsSource(sourceClients1, sourceClients2, sourceClients3, Months, i);
+        month.payGrade = this.getPaygrade(startingPayGrade, month.classClients);
+        commission = this.getCommission(month.payGrade, month.clientsS);
+        month.incomeM = month.revenue * commission;
+        month.incomeH = month.incomeM / (month.hoursWeek * 4.3);
+        month.incomeT += month.incomeM;
+        
+        Months.push({...month});	
 
-        IncomeT = actualIncomePerMonth + Months[i].IncomeT;
-
-        if (goalMonth == 0 && actualIncomePerMonth > desiredIncomePerMonth) {
+        if (goalMonth == 0 && month.incomeM > desiredIncomePerMonth) {
           goalMonth = i+2;
           checkGoals = 'results' === mode ? 0 : goalMonth; // 'assumptions' = mode
         }
-        if (actualIncomePerMonth <= 0 || introHours <= 0 || fundamentalsClients <= 0 || ptHours <= 0) {
-          noHours = 1;
-        }
         if (goalMonth == 0 && i == 34) {  // 'assumptions' = mode
-            checkGoals = 'results' === mode ? 0 : goalMonth;
-          }
+          checkGoals = 'results' === mode ? 0 : goalMonth;
+        }
         
-        //add data from current month to array
-        Months.push({
-            introHours,
-            introToFun,
-            fundamentalsClients,
-            funToGroup,
-            yearlyAttrition,
-            Clients,
-            ptPerFun,
-            ptHours,
-            currentClassHours,
-            HoursWeek,
-            clientsS,
-            actualIncomePerMonth,
-            IncomeH,
-            IncomeT,
-            PayGrade,
-            month: i+2,
-            newClients,
-        });	
         i++;
       }
 
       if ('results' === mode) {
         this.results.tableData.goalMonth = goalMonth;
-        this.results.noHours = noHours;
-        this.setRawResultsGraphData(Months);
-
-        return Months;
+        this.Months = Months;
+        this.setRawResultsGraphData(Months, this.results.selectedMonth);
       }
       if ('assumptions' === mode) {
         return checkGoals;
       }
       return 'Error';
     },
-    setRawResultsGraphData(Months) {
-      
+    setRawResultsGraphData(Months, selectedMonth) {
       let tD = this.results.tableData;
-      let gM = tD.goalMonth >= 36 ? 35 : tD.goalMonth;
-      let sM = this.results.selectedMonth - 1;
+      let gM = tD.goalMonth >= 48 ? 47 : tD.goalMonth-1;
+      let sM = selectedMonth - 1;
       // goal month
-      tD.clients[0] = 0 === gM ? 'N/A' : Math.round(Months[gM].Clients);
-      tD.hrsPerWeek[0] = 0 === gM ? 'N/A' : Math.round(Months[gM].HoursWeek * 10) / 10;
-      tD.dollarsPerMonth[0] = 0 === gM ? 'N/A' : Months[gM].actualIncomePerMonth;
-      tD.dollarsPerHour[0] = 0 === gM ? 'N/A' : Months[gM].IncomeH;
-      tD.totalIncome[0] = 0 === gM ? 'N/A' : Months[gM].IncomeT;
-      tD.payGrade[0] = 0 === gM ? 'N/A' : PAY_GRADE_MAP[Months[gM].PayGrade];
+      tD.clients[0] = -1 === gM ? 'N/A' : Math.round(Months[gM].classClients);
+      tD.hrsPerWeek[0] = -1 === gM ? 'N/A' : Math.round(Months[gM].hoursWeek * 10) / 10;
+      tD.dollarsPerMonth[0] = -1 === gM ? 'N/A' : Months[gM].incomeM;
+      tD.dollarsPerHour[0] = -1 === gM ? 'N/A' : Months[gM].incomeH;
+      tD.totalIncome[0] = -1 === gM ? 'N/A' : Months[gM].incomeT;
+      tD.payGrade[0] = -1 === gM ? 'N/A' : PAY_GRADE_MAP[Months[gM].payGrade];
+      tD.attrition[0] = -1 === gM ? 'N/A' : Months[gM].yearlyAttrition;
       // month selected
-      tD.clients[1] = Math.round(Months[sM].Clients);
-      tD.hrsPerWeek[1] = Math.round(Months[sM].HoursWeek * 10) / 10;
-      tD.dollarsPerMonth[1] = Months[sM].actualIncomePerMonth;
-      tD.dollarsPerHour[1] = Months[sM].IncomeH;
-      tD.totalIncome[1] = Months[sM].IncomeT;
-      tD.payGrade[1] = PAY_GRADE_MAP[Months[sM].PayGrade];
+      tD.clients[1] = Math.round(Months[sM].classClients);
+      tD.hrsPerWeek[1] = Math.round(Months[sM].hoursWeek * 10) / 10;
+      tD.dollarsPerMonth[1] = Months[sM].incomeM;
+      tD.dollarsPerHour[1] = Months[sM].incomeH;
+      tD.totalIncome[1] = Months[sM].incomeT;
+      tD.payGrade[1] = PAY_GRADE_MAP[Months[sM].payGrade];
+      tD.attrition[1] = Months[sM].yearlyAttrition;
         
       // build graph
-      let rawData = Months.map(month => month.actualIncomePerMonth);
+      let rawData = Months.map(month => month.incomeM);
       this.results.graphData = this.formatGraphData(rawData, this.results.sliderRange)
       this.results.graphData.tooltip = this.results.graphData.tooltip.map( item => FORMATTER.format(Math.round(item)));
     },
   },
   watch: {
-    Months() {
+    assumptions() {
+      let params = this.getAssumptionSliderValues();
+      this.calculate('results', params);
       this.calculateAssumptionGraphData();
     },
     'assumptions.classHours.value'(hours) {
@@ -574,11 +580,16 @@ export default {
       }, 25 );
     };
 
-    Bus.$on('slider-update', ({sliderValue, name}) => {
-      if ('results' === name)
+    Bus.$on('slider-update', ({sliderValue, name, initial}) => {
+      if (initial) return;
+
+      if ('results' === name) {
         vm.results.selectedMonth = sliderValue;
-      else {
+        vm.setRawResultsGraphData(vm.Months, sliderValue);
+        vm.results = Object.assign({}, vm.results);
+      } else {
         vm.assumptions[name].value = sliderValue;
+        vm.assumptions = Object.assign({}, vm.assumptions);
       }
     });
 

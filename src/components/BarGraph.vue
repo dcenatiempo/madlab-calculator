@@ -31,10 +31,11 @@ export default {
       chart: {
         width: 0,
         height: 100,
-        scale: 36,
+        scale: 48,
         background: '',
         blue: '#64B5F6',
         red: 'rgb(243, 151, 151)',
+        gray: '#ccc',
         barOffset: 0,
         barPadding: 2,
       }
@@ -58,6 +59,10 @@ export default {
         scale: 0,
       }),
     },
+    desiredIncome: {
+      type: Number,
+      default: 0,
+    }
   },
 
   computed: {
@@ -171,8 +176,6 @@ export default {
     },
 
     calculateDimension() {
-      let pagePadding = 28
-
       this.chart = Object.assign({}, this.chart, {
         width: this.graphDimensions.w,
         height: this.graphDimensions.h - CANVAS.margin.top - CANVAS.margin.bottom,
@@ -180,29 +183,34 @@ export default {
       });
     },
     calculateColor(data) {
-      if (36 === this.chart.scale) {
-        if (0 === data) return this.chart.red;
-      }
-      return this.chart.blue;
+      // This is an Assumption graph
+      if (48 === this.chart.scale)
+        if (0 === data)
+          return this.chart.red;
+        else
+          return this.chart.blue;
+
+      // This is the Results graph 
+      if (data >= this.desiredIncome)
+        return this.chart.blue;
+      else
+        return this.chart.gray;
     },
     calculateHeight(data) {
-      if (36 === this.chart.scale) {
-        if (0 === data) data = 36;
+      if (48 === this.chart.scale) {
+        if (0 === data) data = 48;
       }
       return this.chart.height*data/this.chart.scale
     },
     calculateY(data) {
-      if (36 === this.chart.scale) {
-        if (0 === data) data = 36;
+      if (48 === this.chart.scale) {
+        if (0 === data) data = 48;
       }
       return this.chart.height - this.chart.height*data/this.chart.scale + CANVAS.margin.top
     }
   },
 
   mounted() {
-    // debugger
-    // this.calculateDimension(this.width);
-    // this.initializeGraph();
   },
   watch: {
     graphDimensions() {

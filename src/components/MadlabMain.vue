@@ -18,6 +18,7 @@
       <Assumption
         name="startingPayGrade"
         :assumption="assumptions.startingPayGrade"/>
+        <a class="paygrade-link" target="_blank" href="http://my.madlabgroup.com/professional-coach-diploma-program/#1504894591277-bdd30366-89c6">view details</a>
       <Assumption
         name="monthlyRate"
         :assumption="assumptions.monthlyRate"/>
@@ -59,6 +60,9 @@
       <h2>Retention / Conversion</h2>
       <p>Your retention and conversion rates play a huge role in how many hours you work compared with your revenue produced. Better retention equals more money with less work.</p>
       <Assumption
+        name="averagePT"
+        :assumption="assumptions.averagePT"/>
+      <Assumption
         name="salesmanship"
         :assumption="assumptions.salesmanship"/>
       <!-- Sizing template is serving double duty:
@@ -66,15 +70,15 @@
       2) custom salesmanship x-axis label -->
       <div id="sizing-template">
         <div class="left">
-          <div :class="{hide}"><br>Intro ⇨ Fund<br>Fund ⇨ Group <br>PT Sessions/Fund <br>Yearly Attrition</div> 
+          <div :class="{hide}"><br>Intro ⇨ Fund<br>Fund ⇨ Group<br>Yearly Attrition Base</div> 
         </div>
         <div class="right">
           <div>Poor</div>
           <div>Average</div>
           <div>Awesome</div>
-          <div :class="{hide}">25%<br>50%<br>10<br>40%</div>
-          <div :class="{hide}">60%<br>70%<br>13<br>25%</div>
-          <div :class="{hide}">90%<br>90%<br>16<br>10%</div>
+          <div :class="{hide}">25%<br>50%<br>40%</div>
+          <div :class="{hide}">60%<br>70%<br>25%</div>
+          <div :class="{hide}">90%<br>90%<br>10%</div>
         </div>
       </div>
       <Assumption
@@ -116,7 +120,6 @@ export default {
     }
   },
   mounted() {
-    let vm = this;
     this.right = document.querySelector("#sizing-template .right");
     this.left = document.querySelector("#sizing-template .left");
     Bus.$on('resize', this.resize);
@@ -154,6 +157,12 @@ export default {
       text-align: center;
     }
   }
+}
+.paygrade-link {
+  position: relative;
+  top: -24px;
+  height: 0;
+  display: block;
 }
 
 </style>

@@ -5,9 +5,9 @@
       <div class="right"></div>
     </div>
     <div class="wrapper">
-      <div class="results-table">
+      <div class="results-table" :class="{'no-goal': 0 === results.tableData.goalMonth}">
         <span></span>
-        <span>{{goalMonth}}</span>
+        <span>{{goalMonthText}}</span>
         <span>{{selectedMonth}}</span>
         <span>Clients</span>
         <span>{{format(results.tableData.clients[0])}}</span>
@@ -27,13 +27,17 @@
         <span>Pay Grade</span>
         <span>{{format(results.tableData.payGrade[0])}}</span>
         <span>{{format(results.tableData.payGrade[1])}}</span>
+        <span>Est. Attrition</span>
+        <span>{{format(results.tableData.attrition[0])}}%</span>
+        <span>{{format(results.tableData.attrition[1])}}%</span>
       </div>
       <SliderChart
         :graphData="results.graphData"
         :graphDimensions="graphDimensions"
         :sliderRange="results.sliderRange"
         :sliderValue="results.selectedMonth"
-        name="results"/>
+        name="results"
+        :desiredIncome="assumptions.desiredIncomePerMonth.value"/>
     </div>
     <div class="handle" :class="{expanded}" @click="expandResults"><div>&raquo;</div></div>
   </div>
@@ -77,10 +81,12 @@ export default {
       return {
         w: this.width,
         h: 120,
-        scale: Math.max(...this.results.graphData.y, this.assumptions.desiredIncomePerMonth.value),
+        // scale: Math.max(...this.results.graphData.y, this.assumptions.desiredIncomePerMonth.value),
+        // scale: this.assumptions.desiredIncomePerMonth.value,
+        scale: 10000,
       };
     },
-    goalMonth() {
+    goalMonthText() {
       let gm = this.results.tableData.goalMonth;
       return 0 == gm ? '3+ Years' : `Month ${gm}`;
     },
@@ -91,6 +97,7 @@ export default {
   },
   methods: {
     format(val) {
+      if (!val) return '?';
       return val.toString().includes('N/A') || val.toString().includes('NaN')
         ? '?'
         : val;
@@ -113,7 +120,8 @@ export default {
   mounted() {
     let vm = this;
     this.ref = document.querySelector("#results");
-    window.dispatchEvent(new Event('resize'));
+    this.width = document.querySelector('#results-sizing-template .right').clientWidth;
+    setTimeout(() => { window.dispatchEvent(new Event('resize'));}, 0);
     Bus.$on('resize', ()=> {
       vm.width = document.querySelector('#results-sizing-template .right').clientWidth;
       vm.expandResults(false)
@@ -134,9 +142,11 @@ export default {
   margin-top: -10px;
   padding-top: 10px;
  
-  &.with-transition {
-    transition: all ease .2s;
-  }
+  // &.with-transition {
+    // TODO: currently transitioning top property is very laggy
+    // Need to switch to a different method which will be difficult with a sticky header...
+    // transition: all ease .2s;
+  // }
 
   .wrapper {
     display: flex;
@@ -150,6 +160,13 @@ export default {
     grid-row-gap: 1px;
     padding-right: 30px;
     margin: auto;
+
+    &.no-goal {
+      span:nth-child(3n+2) {
+        // background: rgb(243, 151, 151);
+        background: #ccc;
+      }
+    }
 
     span {
         padding: 2px 20px;
@@ -185,6 +202,7 @@ export default {
     bottom: -16px;
     display: flex;
     justify-content: center;
+    cursor: pointer;
 
     div {
       font-size: 3em;

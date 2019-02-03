@@ -51,7 +51,7 @@ export default {
       return {
         w: this.width,
         h: 120,
-        scale: 36,
+        scale: 48,
       };
     },
     formattedAssumption() {

@@ -9,7 +9,8 @@
     </div>
     <BarGraph
       :graphDimensions="graphDimensions"
-      :d3-data="graphData"/>
+      :d3-data="graphData"
+      :desiredIncome="desiredIncome"/>
   </div>
 </template>
 
@@ -27,6 +28,7 @@ export default {
   data() {
     return {
       value: 1,
+      initial: true,
       // height: 150,
       // width: null,
     };
@@ -52,7 +54,7 @@ export default {
       type: Object,
       default: () => ({
         min: 1,
-        max: 1,
+        max: 2,
         step: 1, 
         interval: 1,
       })
@@ -63,6 +65,10 @@ export default {
     },
     name: {
       type: String,
+    },
+    desiredIncome: {
+      type: Number,
+      default: 0,
     }
   },
   computed: {},
@@ -73,7 +79,8 @@ export default {
   },
   watch: {
     value(sliderValue) {
-      Bus.$emit('slider-update', { sliderValue, name: this.name });
+      Bus.$emit('slider-update', { sliderValue, name: this.name, initial: this.initial });
+      this.initial = false;
     }
   }
 }
