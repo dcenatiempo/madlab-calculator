@@ -169,7 +169,7 @@ export default {
     }
 
     span {
-        padding: 2px 20px;
+        padding: 2px 12px;
 
       &:nth-child(3n+1) {
         // background: transparent;
@@ -205,8 +205,8 @@ export default {
     cursor: pointer;
 
     div {
-      font-size: 3em;
-      line-height: .5em;
+      font-size: 48px;
+      line-height: 8px;
       transform: rotate(90deg);
     }
     &.expanded div {

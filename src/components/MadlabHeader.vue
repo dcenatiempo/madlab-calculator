@@ -26,11 +26,14 @@ header {
     justify-content: space-between;
 
     > a img {
-      height:90px;
+      height: 16vw;
+      max-height:90px;
     }
     
     > img {
-      height:140px;
+      max-height: 24vw;
+      height: 140px;
+      margin-top: -20px;
     }
   }
   

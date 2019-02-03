@@ -6,6 +6,7 @@
     <p>The right column show a snapshot of any selected month along your journey.</p>
     <MadlabResults :results="results" :assumptions="assumptions"/>
     <MadlabMain :assumptions="assumptions"/>
+    <footer><span>©2019 Madlab Group</span><span>Developed by &nbsp;<a href="http://dcenatiempo.com/" target="_blank">dcenatiempo.com</a></span></footer>
   </div>
 </template>
 
@@ -605,6 +606,9 @@ export default {
 </script>
 
 <style lang="scss">
+* {
+  box-sizing: border-box;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -612,6 +616,13 @@ export default {
   color: #2c3e50;
   padding: 20px;
   max-width: 960px;
+  width: 100vw;
   margin: auto;
+
+  footer {
+    padding: 5px;
+    display: grid;
+    text-align: center;
+  }
 }
 </style>
