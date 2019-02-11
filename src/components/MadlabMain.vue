@@ -14,7 +14,7 @@
 
     <section>
       <h2>Gym's Determinants</h2>
-      <p>Not everything is in direct control of the coach. The following items are determined determined by the gym owners and your progress in the PCDP as you become a professional coach.</p>
+      <p>Not everything is in direct control of the coach. The following items are determined by the gym owners and your progress in the PCDP as you become a professional coach.</p>
       <Assumption
         name="startingPayGrade"
         :assumption="assumptions.startingPayGrade"/>

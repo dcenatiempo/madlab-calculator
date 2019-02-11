@@ -206,7 +206,7 @@ export default {
 
     div {
       font-size: 48px;
-      line-height: 8px;
+      line-height: 24px;
       transform: rotate(90deg);
     }
     &.expanded div {
