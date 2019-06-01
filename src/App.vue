@@ -6,7 +6,7 @@
     <p>The right column show a snapshot of any selected month along your journey.</p>
     <MadlabResults :results="results" :assumptions="assumptions"/>
     <MadlabMain :assumptions="assumptions"/>
-    <footer><span>©2019 Madlab Group</span><span>Developed by &nbsp;<a href="http://dcenatiempo.com/" target="_blank">dcenatiempo.com</a></span></footer>
+    <footer><span>&copy;2019 Madlab Group</span><span>Developed by &nbsp;<a href="http://dcenatiempo.com/" target="_blank">dcenatiempo.com</a></span></footer>
   </div>
 </template>
 
