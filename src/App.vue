@@ -22,7 +22,7 @@ const FORMATTER = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 0,
 });
 
-const PAY_GRADE_MAP = ['JA1', 'JA2', 'SA1', 'SA2', 'Associate']
+const PAY_GRADE_MAP = ['JA', 'SA', 'Associate']
 
 const defaultData = {
   x: [],
@@ -91,7 +91,7 @@ export default {
           format: 'paygrade',
           sliderRange: {
             min: 0,
-            max: 4,
+            max: 2,
             step: 1,
             interval: 1,
           },
@@ -280,20 +280,16 @@ export default {
     },
     getCommission(paygrade, clientsS) {
       let referral = (clientsS / 100) * .1;
-      if (paygrade == 0) return 0;
-      if (paygrade == 1) return .2 + referral;
-      if (paygrade == 2) return .3 + referral;
-      if (paygrade == 3) return .35 + referral;
-      if (paygrade == 4) return .4 + referral;
+      if (paygrade == 0) return .2 + referral;
+      if (paygrade == 1) return .3 + referral;
+      if (paygrade == 2) return .4 + referral;
       return .4 + referral;
       
     },
     getPaygrade(paygrade, clients) {
       let pg;
-      if (clients >= 50) pg = 4;
-      else if (clients >= 30) pg = 3;
-      else if (clients >= 10) pg = 2;
-      else if (clients >= 3) pg = 1;
+      if (clients >= 50) pg = 2;
+      else if (clients >= 10) pg = 1;
       else pg = 0;
       return Math.max(pg, paygrade);
     },
@@ -608,6 +604,7 @@ export default {
 <style lang="scss">
 * {
   box-sizing: border-box;
+  color: #19264b;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

@@ -33,9 +33,9 @@ export default {
         height: 100,
         scale: 48,
         background: '',
-        blue: '#64B5F6',
-        red: 'rgb(243, 151, 151)',
-        gray: '#ccc',
+        blue: '#0757c3',
+        red: 'rgb(234 112 94)',
+        gray: '#d0d3d4',
         barOffset: 0,
         barPadding: 2,
       }
@@ -237,7 +237,9 @@ export default {
     left: 0px;
     padding: 10px 20px;
     border-radius: 3px;
-    background: rgb(40, 108, 209);
+    background: #0757c3;
+    // #19264b; // dark blue
+    // #d0d3d4; // gray
     color: white;
     z-index: 100;
   }

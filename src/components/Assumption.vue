@@ -22,7 +22,7 @@ const FORMATTER = new Intl.NumberFormat('en-US', {
   currency: 'USD',
   minimumFractionDigits: 0,
 });
-const PAY_GRADE_MAP = ['JA1', 'JA2', 'SA1', 'SA2', 'Associate']
+const PAY_GRADE_MAP = ['JA', 'SA', 'Associate']
 
 import { Bus } from '../bus.js'
 import SliderChart from './SliderChart';
@@ -104,8 +104,7 @@ export default {
     .value {
       font-size: 36px;
       font-weight: normal;
-      color: #000;
-      border-bottom: 1px solid #000;
+      border-bottom: 1px solid #19264b;
       margin: 0 0 3px;
     }
 
