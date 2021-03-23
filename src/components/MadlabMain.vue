@@ -123,8 +123,6 @@ export default {
       else this.hide = false
     },
     showPaygradeModal() {
-
-      console.log('pizza')
       this.paygradeModalVisible = true;
     }
   },
