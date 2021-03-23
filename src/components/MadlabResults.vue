@@ -106,12 +106,10 @@ export default {
       let isHidden = this.top !== 0;
 
       if (shouldToggle) {
-        this.withTransition = true;
         this.top = Math.abs(this.top - this.ref.clientHeight + 16);
         this.expanded = !this.expanded;
       }
       else if (isHidden) {
-        this.withTransition = false;
         this.top = this.ref.clientHeight - 16;
       }
       window.scrollTo(window.scrollX, window.scrollY);
@@ -142,11 +140,11 @@ export default {
   margin-top: -10px;
   padding-top: 10px;
  
-  // &.with-transition {
+  &.with-transition {
     // TODO: currently transitioning top property is very laggy
     // Need to switch to a different method which will be difficult with a sticky header...
-    // transition: all ease .2s;
-  // }
+    transition: all ease .2s;
+  }
 
   .wrapper {
     display: flex;

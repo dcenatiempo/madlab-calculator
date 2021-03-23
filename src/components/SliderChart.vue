@@ -5,7 +5,6 @@
         v-model="value"
         :min="sliderRange.min"
         :max="sliderRange.max"
-        tooltip-style="border-color: #19264b; background-color: #19264b"
         :interval="sliderRange.interval"/>
     </div>
     <BarGraph
@@ -102,6 +101,10 @@ export default {
     }
     .vue-slider-component.vue-slider-horizontal {
       padding: 0 8px !important;
+    }
+    .vue-slider-component .vue-slider-tooltip {
+      border-color: #19264b;
+      background-color: #19264b
     }
   }
 }

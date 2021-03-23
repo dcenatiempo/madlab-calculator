@@ -18,7 +18,7 @@
       <Assumption
         name="startingPayGrade"
         :assumption="assumptions.startingPayGrade"/>
-        <a class="paygrade-link" target="_blank" href="http://my.madlabgroup.com/professional-coach-diploma-program/#1504894591277-bdd30366-89c6">view details</a>
+        <a class="paygrade-link" @click="showPaygradeModal">view details</a>
       <Assumption
         name="monthlyRate"
         :assumption="assumptions.monthlyRate"/>
@@ -85,18 +85,21 @@
         name="superstar"
         :assumption="assumptions.superstar"/>
     </section>
+    <PaygradeModal :is-visible="paygradeModalVisible" @close="paygradeModalVisible = false"/>
 
   </main>
 </template>
 
 <script>
 import Assumption from './Assumption';
+import PaygradeModal from './PaygradeModal';
 import { Bus } from '../bus.js';
 
 export default {
   name: 'MadlabMain',
   components: {
     Assumption,
+    PaygradeModal,
   },
   props: {
     assumptions: {
@@ -110,6 +113,7 @@ export default {
       right: undefined,
       left: undefined,
       hide: true,
+      paygradeModalVisible: false,
     }
   },
   methods: {
@@ -117,6 +121,11 @@ export default {
       if (this.right.clientWidth === this.left.clientWidth)
         this.hide = true
       else this.hide = false
+    },
+    showPaygradeModal() {
+
+      console.log('pizza')
+      this.paygradeModalVisible = true;
     }
   },
   mounted() {
@@ -163,6 +172,7 @@ export default {
   top: -24px;
   height: 0;
   display: block;
+  cursor: pointer;
 }
 
 </style>
