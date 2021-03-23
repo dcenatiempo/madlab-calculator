@@ -97,7 +97,7 @@ export default {
     width: 100%;
 
     .vue-slider-component .vue-slider-process {
-      background-color: #0757c3;
+      background-color: #1861ae;
     }
     .vue-slider-component.vue-slider-horizontal {
       padding: 0 8px !important;

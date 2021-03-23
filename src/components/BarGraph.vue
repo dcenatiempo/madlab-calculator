@@ -33,7 +33,7 @@ export default {
         height: 100,
         scale: 48,
         background: '',
-        blue: '#0757c3',
+        blue: '#1861ae',
         red: 'rgb(234 112 94)',
         gray: '#d0d3d4',
         barOffset: 0,
@@ -237,7 +237,7 @@ export default {
     left: 0px;
     padding: 10px 20px;
     border-radius: 3px;
-    background: #0757c3;
+    background: #1861ae;
     // #19264b; // dark blue
     // #d0d3d4; // gray
     color: white;

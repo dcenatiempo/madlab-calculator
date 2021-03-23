@@ -175,7 +175,7 @@ export default {
         border-bottom: 1px solid #adadad;
       }
       &:nth-child(3n+2) {
-        background: #0757c3;
+        background: #1861ae;
         color: white;
         text-align: center;
       }
