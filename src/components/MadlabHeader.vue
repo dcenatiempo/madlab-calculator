@@ -2,11 +2,10 @@
   <header>
     <nav>
       <a href="http://madlabgroup.com/" target="_blank">
-        <img src="../assets/logo.png" alt="MadLab Group" />
+        <img src="../assets/logo.png" alt="Madlab Group" />
       </a>
-      <img src="../assets/moosecock_rooster_final.png" alt="Moose Cock" />
     </nav>
-    <h1>What can I realistically expect to earn in the MadLab system?</h1>
+    <h1>What can I realistically expect to earn in the Madlab system?</h1>
     <p>As an apprentice, you will learn under the direction of an experienced coach what it takes to be a professional. You will learn not only how to train your clients, but also how to build relationships with them and help them to reach their goals. As a professional, you have an amazing opportunity to earn a great living doing something that you love. We have the systems in place to do it, but it is up to you to set some realistic goals, and work hard to achieve them.</p>
   </header>
 </template>

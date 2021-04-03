@@ -5,7 +5,7 @@
       <div class="header">
         <button @click="$emit('close')" class="close">X</button>
       </div>
-      <img class="paygrade-image" src="../assets/madlab_paygrade.png" alt="MadLab Paygrade" />
+      <img class="paygrade-image" src="../assets/madlab_paygrade.png" alt="Madlab Paygrade" />
     </div>
   </div>
 </transition>
