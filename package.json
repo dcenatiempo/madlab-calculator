@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "ajv": "^5.0.0",
-    "d3": "^6.5.0",
+    "d3": "^7.6.1",
     "vue": "^2.6.12",
     "vue-slider-component": "^2.8.6"
   },
